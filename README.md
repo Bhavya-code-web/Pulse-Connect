@@ -69,4 +69,3 @@ Errors are `{ "message": "...", "errors": { field: "..." } }` with 400 (bad JSON
 - **Why parameterized queries?** They stop SQL injection because input is sent as data, never as SQL text.
 - **Why validate on the server too?** Anyone can bypass browser checks with `curl`.
 - **Why a UNIQUE phone column?** The database itself guarantees no duplicate donors, even under concurrent requests.
-# Pulse-Connect
