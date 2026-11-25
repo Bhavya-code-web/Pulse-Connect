@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pulse Connect — Blood Donor Database</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- App Wrapper with subtle warm backdrop matching photo -->
+  <div class="app-layout">
+
+    <!-- Top Navigation Header -->
+    <header class="app-header">
+      <div class="header-container">
+        
+        <!-- Brand Left -->
+        <div class="brand">
+          <div class="brand-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path>
+              <path d="M12 12v4m0 0h2m-2 0H10" stroke="#ffffff" stroke-width="2"></path>
+            </svg>
+          </div>
+          <div class="brand-text">
+            <h1 class="brand-title">Pulse Connect</h1>
+            <span class="brand-subtitle">Blood Donor Database</span>
+          </div>
+        </div>
+
+        <!-- Header Actions Right -->
+        <div class="header-actions">
+          <div class="donors-count-pill" id="headerDonorsPill">
+            <span class="green-dot"></span>
+            <span id="headerDonorsCount">12 donors stored</span>
+          </div>
+
+          <button type="button" class="btn btn-header-register" id="headerRegisterBtn">
+            <span class="btn-icon">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                <circle cx="8.5" cy="7" r="4"></circle>
+                <line x1="20" y1="8" x2="20" y2="14"></line>
+                <line x1="23" y1="11" x2="17" y2="11"></line>
+              </svg>
+            </span>
+            Register Donor
+          </button>
+
+          <button type="button" class="btn btn-header-emergency" id="headerEmergencyBtn">
+            <span class="pulse-dot"></span>
+            Emergency Request
+          </button>
+        </div>
+
+      </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="main-content">
+
+      <!-- Hero Heading -->
+      <section class="hero-section">
+        <h2 class="hero-title">Emergency Blood Donor Search</h2>
+        <p class="hero-subtitle">
+          Search by name, blood group, city, or availability to find matching donors. Donors stay hidden until you search.
+        </p>
+      </section>
+
+      <!-- Search & Filter Card (Matches photo exactly) -->
+      <section class="card filter-card">
+        <div class="filter-grid">
+          
+          <!-- Search Donor Name or Keyword -->
+          <div class="filter-col">
+            <label for="searchInput" class="field-label">Search Donor Name or Keyword</label>
+            <div class="input-container">
+              <span class="input-icon">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+              </span>
+              <input 
+                type="text" 
+                id="searchInput" 
+                placeholder="e.g., Aarav, Priya..." 
+                autocomplete="off"
+              >
+            </div>
+          </div>
+
+          <!-- Blood Group Dropdown -->
+          <div class="filter-col">
+            <label for="bloodGroupFilter" class="field-label">Blood Group</label>
+            <div class="input-container select-container">
+              <select id="bloodGroupFilter">
+                <option value="">All Blood Groups</option>
+                <option value="A+">A+</option>
+                <option value="A-">A-</option>
+                <option value="B+">B+</option>
+                <option value="B-">B-</option>
+                <option value="AB+">AB+</option>
+                <option value="AB-">AB-</option>
+                <option value="O+">O+</option>
+                <option value="O-">O-</option>
+              </select>
+              <span class="chevron-icon">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </span>
+            </div>
+          </div>
+
+          <!-- Filter by City / Location (With External Location API integration) -->
+          <div class="filter-col autocomplete-wrapper">
+            <div class="label-row">
+              <label for="locationFilter" class="field-label">Filter by City / Location</label>
+              <span class="api-indicator" id="filterApiStatus" title="Location extracted via external API">API</span>
+            </div>
+            <div class="input-container">
+              <span class="input-icon">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                  <circle cx="12" cy="10" r="3"></circle>
+                </svg>
+              </span>
+              <input 
+                type="text" 
+                id="locationFilter" 
+                placeholder="e.g., Mumbai, Chennai, Delhi" 
+                autocomplete="off"
+              >
+              <span class="api-spinner" id="locationFilterSpinner" style="display: none;"></span>
+            </div>
+            <!-- API Autocomplete Dropdown -->
+            <ul class="dropdown-list" id="locationFilterDropdown" style="display: none;"></ul>
+          </div>
+
+          <!-- Availability Status Dropdown -->
+          <div class="filter-col">
+            <label for="statusFilter" class="field-label">Availability Status</label>
+            <div class="input-container select-container">
+              <select id="statusFilter">
+                <option value="">All Statuses</option>
+                <option value="Available">Available</option>
+                <option value="Unavailable">Unavailable</option>
+              </select>
+              <span class="chevron-icon">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </span>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Filter Card Footer Sub-bar -->
+        <div class="filter-footer">
+          <div class="filter-status-message" id="filterStatusText">
+            Enter a search filter above to view matching donors
+          </div>
+          <button type="button" class="btn btn-reset-filters" id="resetFiltersBtn">
+            <span class="btn-icon">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/>
+              </svg>
+            </span>
+            Reset Filters
+          </button>
+        </div>
+      </section>
+
+      <!-- Results Area (Initial State: "No donors shown yet" placeholder matching photo) -->
+      <section class="results-container">
+        
+        <!-- Placeholder Box (Shown before searching) -->
+        <div class="card placeholder-card" id="noSearchPlaceholder">
+          <div class="placeholder-icon-wrap">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+              <circle cx="8.5" cy="7" r="4"></circle>
+              <circle cx="17.5" cy="11.5" r="3.5"></circle>
+              <line x1="20" y1="14" x2="22" y2="16"></line>
+            </svg>
+          </div>
+          <h3 class="placeholder-title">No donors shown yet</h3>
+          <p class="placeholder-desc">
+            Type a name, pick a blood group, or enter a city above to display matching donor cards.
+          </p>
+        </div>
+
+        <!-- Donors Cards Grid (Rendered when search/filters are active) -->
+        <div class="donors-grid" id="donorsGrid" style="display: none;">
+          <!-- Populated dynamically via app.js -->
+        </div>
+
+        <!-- Empty State (When search yields 0 matches) -->
+        <div class="card empty-search-card" id="emptySearchState" style="display: none;">
+          <div class="empty-icon">🔍</div>
+          <h3>No matching donors found</h3>
+          <p>No registered donor matches your current search filters. Try another blood group or nearby city.</p>
+        </div>
+
+      </section>
+
+      <!-- Register a New Blood Donor Card (Matches bottom card in photo) -->
+      <section class="card register-card" id="registerSection">
+        <div class="register-header">
+          <div class="register-title-wrap">
+            <span class="register-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#991b1b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4.8 2.3A.3.3 0 1 0 5 2H4a2 2 0 0 0-2 2v5a6 6 0 0 0 6 6v0a6 6 0 0 0 6-6V4a2 2 0 0 0-2-2h-1a.2.2 0 1 0 .3.3"></path>
+                <path d="M8 15v1a6 6 0 0 0 6 6v0a6 6 0 0 0 6-6v-4"></path>
+                <circle cx="20" cy="10" r="2"></circle>
+              </svg>
+            </span>
+            <h3 class="register-title">Register a New Blood Donor</h3>
+          </div>
+          <p class="register-subtitle">
+            Add a donor to the database so they appear in emergency searches.
+          </p>
+        </div>
+
+        <form id="inlineRegisterForm" class="register-form">
+          <div class="register-row">
+            
+            <!-- Full Name -->
+            <div class="register-col">
+              <label for="regFullName" class="field-label">Full Name</label>
+              <div class="input-container">
+                <input 
+                  type="text" 
+                  id="regFullName" 
+                  placeholder="e.g., Aarav Sharma" 
+                  required
+                >
+              </div>
+            </div>
+
+            <!-- Blood Group -->
+            <div class="register-col">
+              <label for="regBloodGroup" class="field-label">Blood Group</label>
+              <div class="input-container select-container">
+                <select id="regBloodGroup" required>
+                  <option value="" disabled selected>Select</option>
+                  <option value="A+">A+</option>
+                  <option value="A-">A-</option>
+                  <option value="B+">B+</option>
+                  <option value="B-">B-</option>
+                  <option value="AB+">AB+</option>
+                  <option value="AB-">AB-</option>
+                  <option value="O+">O+</option>
+                  <option value="O-">O-</option>
+                </select>
+                <span class="chevron-icon">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                  </svg>
+                </span>
+              </div>
+            </div>
+
+            <!-- Age -->
+            <div class="register-col col-narrow">
+              <label for="regAge" class="field-label">Age (Years)</label>
+              <div class="input-container">
+                <input 
+                  type="number" 
+                  id="regAge" 
+                  min="18" 
+                  max="65" 
+                  placeholder="e.g., 26" 
+                  required
+                >
+              </div>
+            </div>
+
+            <!-- City / Location with External API Lookup & Verification -->
+            <div class="register-col col-wide autocomplete-wrapper">
+              <div class="label-row">
+                <label for="regLocation" class="field-label">City / Location</label>
+                <span class="verify-status-badge" id="regVerifyStatusBadge">API Verified</span>
+              </div>
+              <div class="input-container" id="regLocationContainer">
+                <input 
+                  type="text" 
+                  id="regLocation" 
+                  placeholder="e.g., Chennai, Tamil Nadu" 
+                  autocomplete="off"
+                  required
+                >
+                <span class="api-spinner" id="regLocationSpinner" style="display: none;"></span>
+              </div>
+              <!-- Autocomplete dropdown -->
+              <ul class="dropdown-list" id="regLocationDropdown" style="display: none;"></ul>
+            </div>
+
+            <!-- Phone Number -->
+            <div class="register-col">
+              <label for="regPhone" class="field-label">Phone Number</label>
+              <div class="input-container">
+                <input 
+                  type="tel" 
+                  id="regPhone" 
+                  placeholder="e.g., +91 9840223456" 
+                  required
+                >
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Bottom Actions Row -->
+          <div class="register-actions-row">
+            <label class="checkbox-label">
+              <input type="checkbox" id="regAvailableCheckbox" checked>
+              <span class="custom-checkbox"></span>
+              <span class="checkbox-text">Available to donate now</span>
+            </label>
+
+            <button type="submit" class="btn btn-register-submit" id="submitRegisterBtn">
+              <span class="btn-icon">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <line x1="12" y1="8" x2="12" y2="16"></line>
+                  <line x1="8" y1="12" x2="16" y2="12"></line>
+                </svg>
+              </span>
+              Register Donor
+            </button>
+          </div>
+
+          <!-- Verification helper info -->
+          <div class="api-verification-hint" id="apiVerificationHint">
+            <span>ℹ️ Location is queried in real time via the external Geocoding API to standardize city & state.</span>
+          </div>
+        </form>
+      </section>
+
+    </main>
+
+    <!-- Footer matching photo -->
+    <footer class="app-footer">
+      <div class="footer-container">
+        <span class="footer-left">Pulse Connect — Student Blood Donor Registry</span>
+        <span class="footer-right">Call local emergency services first in critical situations.</span>
+      </div>
+    </footer>
+
+  </div>
+
+  <!-- Emergency Blood Request Modal -->
+  <div class="modal-backdrop" id="emergencyModal" aria-hidden="true">
+    <div class="modal-box" role="dialog" aria-modal="true">
+      <div class="modal-header emergency-header">
+        <div class="modal-title-group">
+          <div class="emergency-icon-badge">🚨</div>
+          <div>
+            <h3 class="modal-title">Emergency Blood Request</h3>
+            <p class="modal-desc">Broadcast an immediate blood requirement to notify nearby compatible donors</p>
+          </div>
+        </div>
+        <button type="button" class="modal-close-btn" id="closeEmergencyModal">&times;</button>
+      </div>
+
+      <form id="emergencyModalForm" class="modal-form">
+        <div class="form-row">
+          <div class="form-group flex-2">
+            <label class="required" for="emPatientName">Patient Name</label>
+            <input type="text" id="emPatientName" placeholder="e.g., Ramesh Kumar" required>
+          </div>
+          <div class="form-group flex-1">
+            <label class="required" for="emBloodGroup">Blood Group</label>
+            <select id="emBloodGroup" required>
+              <option value="" disabled selected>Select</option>
+              <option value="A+">A+</option>
+              <option value="A-">A-</option>
+              <option value="B+">B+</option>
+              <option value="B-">B-</option>
+              <option value="AB+">AB+</option>
+              <option value="AB-">AB-</option>
+              <option value="O+">O+</option>
+              <option value="O-">O-</option>
+            </select>
+          </div>
+          <div class="form-group" style="max-width: 110px;">
+            <label class="required" for="emUnits">Units</label>
+            <input type="number" id="emUnits" min="1" max="10" value="1" required>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group flex-1">
+            <label class="required" for="emHospital">Hospital / Medical Center</label>
+            <input type="text" id="emHospital" placeholder="e.g., Apollo Hospital, Greams Road" required>
+          </div>
+          <div class="form-group flex-1 autocomplete-wrapper">
+            <label class="required" for="emCity">City / Location</label>
+            <input type="text" id="emCity" placeholder="e.g., Chennai" autocomplete="off" required>
+            <ul class="dropdown-list" id="emCityDropdown" style="display: none;"></ul>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group flex-1">
+            <label class="required" for="emUrgency">Urgency Level</label>
+            <select id="emUrgency" required>
+              <option value="Critical">🔴 Critical (Immediate / < 1 hr)</option>
+              <option value="Urgent" selected>🟠 Urgent (Within 2 to 4 hrs)</option>
+              <option value="Standard">🟡 Standard (Within 24 hrs)</option>
+            </select>
+          </div>
+          <div class="form-group flex-1">
+            <label class="required" for="emContactPhone">Emergency Contact Phone</label>
+            <input type="tel" id="emContactPhone" placeholder="+91 9840223456" required>
+          </div>
+        </div>
+
+        <!-- Live Compatibility Box -->
+        <div class="compatibility-box" id="compatibilityBox">
+          <div class="comp-header">
+            <span class="comp-title">⚡ Instant Donor Compatibility Check</span>
+            <span class="comp-badge" id="compatMatchesBadge">Select blood group</span>
+          </div>
+          <div class="comp-details" id="compatDetailsText">
+            Compatible groups will be calculated dynamically based on recipient blood type.
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn btn-modal-cancel" id="cancelEmergencyModal">Cancel</button>
+          <button type="submit" class="btn btn-modal-emergency">
+            <span>🚨 Broadcast Emergency Request</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div class="toast-stack" id="toastStack" aria-live="polite"></div>
+
+  <!-- Modular Application Logic -->
+  <script src="app.js"></script>
+</body>
+</html>
